@@ -278,9 +278,9 @@ while run:
     world.draw()
 
     if gameover == 0:
-        blob_group.update()
+        snail_group.update()
 
-    blob_group.draw(screen)
+    snail_group.draw(screen)
     lava_group.draw(screen)
     ladder_group.draw(screen)
 
