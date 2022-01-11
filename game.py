@@ -21,6 +21,8 @@ tile_size = 25
 gameover = 0
 
 bg_img = pygame.image.load('img/bg_shroom.png')
+bush = pygame.image.load('img/bush.png')
+
 
 
 class Player:
@@ -36,7 +38,8 @@ class Player:
             img_left = pygame.transform.flip(img_right, True, False)
             self.images_right.append(img_right)
             self.images_left.append(img_left)
-        self.dead_image = pygame.image.load('img/p1_stand.png')
+        self.dead_image = pygame.image.load('img/ghost_dead.png')
+        self.dead_image = pygame.transform.scale(self.dead_image, (20, 30))
         self.image = self.images_right[self.index]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -131,15 +134,26 @@ class Player:
         return gameover
 
 
-class World:
-    def __init__(self, data):
-        self.tile_list = []
 
+class World:
+    def __init__(self, world_data):
+        self.tile_list = []
+        self.i_list = []
         # загрузка изображений
-        dirt_img = pygame.image.load('img/dirtMid.png')
+        dirt_img = pygame.image.load('img/grassCenter.png')
         grass_img = pygame.image.load('img/grassMid.png')
+        grassCliffRight = pygame.image.load('img/grassCliffRight.png')
+        grassCliffLeft = pygame.image.load('img/grassCliffLeft.png')
+        grassHillRight = pygame.image.load('img/grassHillRight.png')
+        grassHalf = pygame.image.load('img/grassHalf.png')
+        grassHalfLeft = pygame.image.load('img/grassHalfLeft.png')
+        grassHalfMid = pygame.image.load('img/grassHalfMid.png')
+        grassHalfRight = pygame.image.load('img/grassHalfRight.png')
+        dirtCaveUR = pygame.image.load('img/dirtCaveUR.png')
+        dirtCaveUL = pygame.image.load('img/dirtCaveUL.png').convert_alpha()
+
         row_count = 0
-        for row in data:
+        for row in world_data:
             col_count = 0
             for tile in row:
                 if tile == 1:
@@ -151,6 +165,71 @@ class World:
                     self.tile_list.append(tile)
                 if tile == 2:
                     img = pygame.transform.scale(grass_img, (tile_size, tile_size))
+
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 78:
+                    img = pygame.transform.scale(dirtCaveUL, (tile_size, tile_size))
+
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 77:
+                    img = pygame.transform.scale(dirtCaveUR, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 76:
+                    img = pygame.transform.scale(grassHalfRight, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 75:
+                    img = pygame.transform.scale(grassHalfMid, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 74:
+                    img = pygame.transform.scale(grassHalfLeft, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 73:
+                    img = pygame.transform.scale(grassHalf, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 72:
+                    img = pygame.transform.scale(grassHillRight, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 71:
+                    img = pygame.transform.scale(grassCliffRight, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 70:
+                    img = pygame.transform.scale(grassCliffLeft, (tile_size, tile_size))
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
@@ -165,32 +244,61 @@ class World:
                 if tile == 9:
                     ladder = Ladder(col_count * tile_size, row_count * tile_size)
                     ladder_group.add(ladder)
-
+                if tile == 7:
+                    door = Door_Mid(col_count * tile_size, row_count * tile_size)
+                    door_group.add(door)
+                if tile == 8:
+                    door = Door_Top(col_count * tile_size, row_count * tile_size)
+                    door_group.add(door)
+                col_count += 1
+            for i in row:
+                if i == 51:
+                    img = pygame.transform.scale(bush, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * tile_size
+                    img_rect.y = row_count * tile_size
+                    tile = (img, img_rect)
+                    self.i_list.append(tile)
                 col_count += 1
             row_count += 1
 
     def draw(self):
         for tile in self.tile_list:
             screen.blit(tile[0], tile[1])
+        for i in self.i_list:
+            screen.blit(i[0], i[1])
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
+        self.images_right = []
+        self.images_left = []
+        self.index = 0
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/snailWalk1.png')
-        self.image = pygame.transform.scale(self.image, (27.5, 17.5))
+        self.imageLEFT = pygame.image.load('img/snailWalk1.png')
+        self.imageRIGHT = pygame.transform.scale(self.imageLEFT, (27.5, 13))
+        self.imageRIGHT = pygame.transform.flip(self.imageLEFT, True, False)
+        self.images_right.append(self.imageRIGHT)
+        self.images_left.append(self.imageLEFT)
+        self.image = self.images_right[self.index]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.move_direction = 1
+        self.direction = 1
         self.move_counter = 0
 
     def update(self):
-        self.rect.x += self.move_direction
+        self.rect.x += self.direction
         self.move_counter += 1
         if abs(self.move_counter) > 25:
-            self.move_direction *= -1
+            self.direction *= -1
             self.move_counter *= -1
+        if self.direction == 1:
+            self.image = self.images_right[self.index]
+            self.image = pygame.transform.scale(self.image, (27.5, 13))
+        if self.direction == -1:
+            self.image = self.images_left[self.index]
+            self.image = pygame.transform.scale(self.image, (27.5, 13))
 
 
 class Ladder(pygame.sprite.Sprite):
@@ -203,11 +311,32 @@ class Ladder(pygame.sprite.Sprite):
         self.rect.y = y
 
 
+class Door_Mid(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        img = pygame.image.load('img/door_openMid.png')
+        self.image = pygame.transform.scale(img, (tile_size, tile_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
+class Door_Top(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        img = pygame.image.load('img/door_openTop.png')
+        self.image = pygame.transform.scale(img, (tile_size, tile_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 class Lava(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         img = pygame.image.load('img/lava.png')
-        self.image = pygame.transform.scale(img, (tile_size, tile_size // 2))
+        self.image = pygame.transform.scale(img, (tile_size, tile_size // 1.6))
+        # img_right = pygame.transform.scale(img_right, (17.5, 27.5))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -215,23 +344,23 @@ class Lava(pygame.sprite.Sprite):
 
 world_data = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 9, 2, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 1],
-    [1, 0, 9, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
-    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 2, 2, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 9, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1],
-    [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 2, 0, 0, 2, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 7, 0, 0, 1],
+    [1, 0, 9, 70, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 71, 0, 0, 74, 76, 0, 0, 0, 0, 75, 0, 70, 2, 2, 2, 2, 2, 1],
+    [1, 0, 9, 0, 77, 1, 1, 1, 1, 1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1, 1, 1, 1],
+    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1, 1],
+    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1],
+    [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
+    [1, 1, 1, 2, 71, 0, 0, 73, 0, 74, 76, 0, 0, 70, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 73, 0, 0, 0, 0, 0, 0, 0, 70, 2, 71, 9, 0, 1],
+    [1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
+    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1],
+    [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 73, 0, 0, 2, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1],
     [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
@@ -241,6 +370,7 @@ player = Player(100, screen_height - 130)
 snail_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
 ladder_group = pygame.sprite.Group()
+door_group = pygame.sprite.Group()
 world = World(world_data)
 
 run = True
@@ -258,6 +388,7 @@ while run:
     snail_group.draw(screen)
     lava_group.draw(screen)
     ladder_group.draw(screen)
+    door_group.draw(screen)
 
     gameover = player.update(gameover)
 
