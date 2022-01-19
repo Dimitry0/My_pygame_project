@@ -24,7 +24,6 @@ bg_img = pygame.image.load('img/bg_shroom.png')
 bush = pygame.image.load('img/bush.png')
 
 
-
 class Player:
     def __init__(self, x, y):
         self.images_right = []
@@ -40,6 +39,9 @@ class Player:
             self.images_left.append(img_left)
         self.dead_image = pygame.image.load('img/ghost_dead.png')
         self.dead_image = pygame.transform.scale(self.dead_image, (20, 30))
+        self.climb_image = pygame.image.load('img/alienGreen_climb1.png')
+        self.climb_image = pygame.transform.scale(self.climb_image, (17.5, 27.5))
+
         self.image = self.images_right[self.index]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -56,22 +58,22 @@ class Player:
         dy = 0
 
         # скорость ходьбы
-        walk = 2.5
+        walk = 3
 
         if gameover == 0:
             key = pygame.key.get_pressed()
-            if key[pygame.K_SPACE] and self.jumped == False:
+            if key[pygame.K_SPACE] and self.jumped == False and self.vel_y == 0:
                 # задаем высоту прыжка
                 self.vel_y = -11
                 self.jumped = True
-            if not key[pygame.K_SPACE]:
+            if not key[pygame.K_SPACE] and self.vel_y == 0:
                 self.jumped = False
             if key[pygame.K_LEFT]:
-                dx -= 2.5
+                dx -= 3
                 self.counter += 1
                 self.direction = -1
             if key[pygame.K_RIGHT]:
-                dx += 2.5
+                dx += 3
                 self.counter += 1
                 self.direction = 1
             if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
@@ -119,6 +121,18 @@ class Player:
 
             if pygame.sprite.spritecollide(self, lava_group, False):
                 gameover = -1
+            if pygame.sprite.spritecollide(self, ladder_group, False):
+                self.jumped = False
+                self.vel_y = 0
+                self.direction = 0
+                dy = 0
+                key = pygame.key.get_pressed()
+                if key[pygame.K_UP]:
+                    dy = -5
+                if key[pygame.K_DOWN]:
+                    dy = 5
+                self.image = self.climb_image
+
 
             self.rect.x += dx
             self.rect.y += dy
@@ -342,6 +356,7 @@ class Lava(pygame.sprite.Sprite):
         self.rect.y = y
 
 
+
 world_data = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
@@ -355,7 +370,7 @@ world_data = [
     [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
     [1, 1, 1, 2, 71, 0, 0, 73, 0, 74, 76, 0, 0, 70, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 73, 0, 0, 0, 0, 0, 0, 0, 70, 2, 71, 9, 0, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 0, 73, 0, 0, 0, 0, 0, 0, 70, 2, 71, 9, 0, 1],
     [1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
     [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1],
@@ -364,6 +379,8 @@ world_data = [
     [1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1],
     [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
+
+
 
 player = Player(100, screen_height - 130)
 
