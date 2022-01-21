@@ -17,69 +17,61 @@ pygame.display.set_caption('nazvanie ne pridumal')
 # размер одного блока(клетки)
 tile_size = 25
 
+
 gameover = 0
-main_menu = True
 
 bg_img = pygame.image.load('img/bg_shroom.png')
 bush = pygame.image.load('img/bush.png')
-restart_img = pygame.image.load('img/blue_button0.png')
-start_img = pygame.image.load('img/green_button0.png')
-exit_img = pygame.image.load('img/red_button0.png')
-
-class Button():
-    def __init__(self, x, y, image):
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.clicked = False
-
-    def draw(self):
-        action = False
-
-        #get mouse position
-        pos = pygame.mouse.get_pos()
-
-        #check mouseover and clicked conditions
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                action = True
-                self.clicked = True
-
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
 
 
-        #draw button
-        screen.blit(self.image, self.rect)
-
-        return action
 
 class Player:
     def __init__(self, x, y):
-        self.reset(x, y)
+        self.images_right = []
+        self.images_left = []
+        self.index = 0
+        self.counter = 0
+        for num in range(1, 5):
+            img_right = pygame.image.load('img/p1_stand.png')
+            img_right = pygame.transform.scale(img_right, (17.5, 27.5))
+            # задаем изображение которое будет выводиться при ходьбе налево
+            img_left = pygame.transform.flip(img_right, True, False)
+            self.images_right.append(img_right)
+            self.images_left.append(img_left)
+        self.dead_image = pygame.image.load('img/ghost_dead.png')
+        self.dead_image = pygame.transform.scale(self.dead_image, (20, 30))
+        self.image = self.images_right[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.vel_y = 0
+        self.jumped = False
+        # направление
+        self.direction = 0
 
     def update(self, gameover):
         dx = 0
         dy = 0
 
         # скорость ходьбы
-        walk = 3
+        walk = 2.5
 
         if gameover == 0:
             key = pygame.key.get_pressed()
-            if key[pygame.K_SPACE] and self.jumped == False and self.vel_y == 0:
+            if key[pygame.K_SPACE] and self.jumped == False:
                 # задаем высоту прыжка
                 self.vel_y = -11
                 self.jumped = True
-            if not key[pygame.K_SPACE] and self.vel_y == 0:
+            if not key[pygame.K_SPACE]:
                 self.jumped = False
             if key[pygame.K_LEFT]:
-                dx -= 3
+                dx -= 2.5
                 self.counter += 1
                 self.direction = -1
             if key[pygame.K_RIGHT]:
-                dx += 3
+                dx += 2.5
                 self.counter += 1
                 self.direction = 1
             if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
@@ -127,19 +119,6 @@ class Player:
 
             if pygame.sprite.spritecollide(self, lava_group, False):
                 gameover = -1
-            if pygame.sprite.spritecollide(self, ladder_group, False):
-                self.jumped = False
-                self.vel_y = 0
-                self.direction = 0
-                dy = 0
-                key = pygame.key.get_pressed()
-                if key[pygame.K_UP]:
-                    dy = -5
-                if key[pygame.K_DOWN]:
-                    dy = 5
-                #if self.vel_y == 0 and self.direction == 0 and self.jumped == False:
-                    #dy = 0
-
 
             self.rect.x += dx
             self.rect.y += dy
@@ -154,29 +133,6 @@ class Player:
 
         return gameover
 
-    def reset(self, x, y):
-        self.images_right = []
-        self.images_left = []
-        self.index = 0
-        self.counter = 0
-        for num in range(1, 5):
-            img_right = pygame.image.load('img/p1_stand.png')
-            img_right = pygame.transform.scale(img_right, (17.5, 27.5))
-            # задаем изображение которое будет выводиться при ходьбе налево
-            img_left = pygame.transform.flip(img_right, True, False)
-            self.images_right.append(img_right)
-            self.images_left.append(img_left)
-        self.dead_image = pygame.image.load('img/ghost_dead.png')
-        self.dead_image = pygame.transform.scale(self.dead_image, (20, 30))
-        self.image = self.images_right[self.index]
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        self.vel_y = 0
-        self.jumped = False
-        self.direction = 0
 
 
 class World:
@@ -386,7 +342,6 @@ class Lava(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-
 world_data = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
@@ -410,8 +365,6 @@ world_data = [
     [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
-
-
 player = Player(100, screen_height - 130)
 
 snail_group = pygame.sprite.Group()
@@ -419,10 +372,6 @@ lava_group = pygame.sprite.Group()
 ladder_group = pygame.sprite.Group()
 door_group = pygame.sprite.Group()
 world = World(world_data)
-
-restart_button = Button(screen_width // 2 - 100, screen_height // 2 - 50, restart_img)
-start_button = Button(screen_width // 2 - 100, screen_height // 2 - 50, start_img)
-exit_button = Button(screen_width // 2 - 100, screen_height // 2 + 50, exit_img)
 
 run = True
 while run:
@@ -433,31 +382,16 @@ while run:
 
     world.draw()
 
-    if main_menu:
-        if exit_button.draw():
-            run = False
-        if start_button.draw():
-            main_menu = False
-    else:
-        world.draw()
+    if gameover == 0:
+        snail_group.update()
 
-        if gameover == 0:
-            snail_group.update()
+    snail_group.draw(screen)
+    lava_group.draw(screen)
+    ladder_group.draw(screen)
+    door_group.draw(screen)
 
-        snail_group.draw(screen)
-        lava_group.draw(screen)
-        ladder_group.draw(screen)
-        door_group.draw(screen)
+    gameover = player.update(gameover)
 
-        game_over = player.update(gameover)
-
-        # if player has died
-        if game_over == -1:
-            if restart_button.draw():
-                player.reset(100, screen_height - 130)
-                game_over = 0
-            if exit_button.draw():
-                run = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
