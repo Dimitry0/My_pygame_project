@@ -4,7 +4,6 @@ import pygame
 
 pygame.init()
 
-
 clock = pygame.time.Clock()
 fps = 60
 
@@ -19,14 +18,19 @@ tile_size = 25
 
 gameover = 0
 main_menu = True
-
+menu_img = pygame.image.load('img/bg_castle.png')
 bg_img = pygame.image.load('img/bg_shroom.png')
 bush = pygame.image.load('img/bush.png')
+font = pygame.font.SysFont('img/Leto Text Sans Defect.otf', 70)
 restart_img = pygame.image.load('img/blue_button0.png')
+restart_img = pygame.transform.scale(restart_img, (285, 73.5))
 start_img = pygame.image.load('img/green_button0.png')
+start_img = pygame.transform.scale(start_img, (285, 73.5))
 exit_img = pygame.image.load('img/red_button0.png')
+exit_img = pygame.transform.scale(exit_img, (285, 73.5))
 
-class Button():
+
+class Button:
     def __init__(self, x, y, image):
         self.image = image
         self.rect = self.image.get_rect()
@@ -37,10 +41,10 @@ class Button():
     def draw(self):
         action = False
 
-        #get mouse position
+        # get mouse position
         pos = pygame.mouse.get_pos()
 
-        #check mouseover and clicked conditions
+        # check mouseover and clicked conditions
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 action = True
@@ -49,11 +53,11 @@ class Button():
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
-
-        #draw button
+        # draw button
         screen.blit(self.image, self.rect)
 
         return action
+
 
 class Player:
     def __init__(self, x, y):
@@ -127,6 +131,7 @@ class Player:
 
             if pygame.sprite.spritecollide(self, lava_group, False):
                 gameover = -1
+                self.image = self.dead_image
             if pygame.sprite.spritecollide(self, ladder_group, False):
                 self.jumped = False
                 self.vel_y = 0
@@ -137,9 +142,6 @@ class Player:
                     dy = -5
                 if key[pygame.K_DOWN]:
                     dy = 5
-                #if self.vel_y == 0 and self.direction == 0 and self.jumped == False:
-                    #dy = 0
-
 
             self.rect.x += dx
             self.rect.y += dy
@@ -386,30 +388,53 @@ class Lava(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-
 world_data = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 7, 0, 0, 1],
-    [1, 0, 9, 70, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 71, 0, 0, 74, 76, 0, 0, 0, 0, 75, 0, 70, 2, 2, 2, 2, 2, 1],
-    [1, 0, 9, 0, 77, 1, 1, 1, 1, 1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1, 1, 1, 1],
-    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1, 1],
-    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1],
-    [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1],
-    [1, 1, 1, 2, 71, 0, 0, 73, 0, 74, 76, 0, 0, 70, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 73, 0, 0, 0, 0, 0, 0, 0, 70, 2, 71, 9, 0, 1],
-    [1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
-    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1],
-    [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 73, 0, 0, 2, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1],
-    [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+     1, 1],
+    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     77, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0,
+     0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 7, 0,
+     0, 1],
+    [1, 0, 9, 70, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 71, 0, 0, 74, 76, 0, 0, 0, 0, 75, 0, 70, 2, 2,
+     2, 2, 2, 1],
+    [1, 0, 9, 0, 77, 1, 1, 1, 1, 1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1,
+     1, 1, 1],
+    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1,
+     1, 1],
+    [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77,
+     1, 1],
+    [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     77, 1],
+    [1, 1, 1, 2, 71, 0, 0, 73, 0, 74, 76, 0, 0, 70, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 1],
+    [1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 0, 0, 0,
+     0, 0, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 73, 0, 0, 0, 0, 0, 0, 0, 70, 2,
+     71, 9, 0, 1],
+    [1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9,
+     0, 1],
+    [1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9,
+     0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2,
+     2, 1],
+    [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 6, 6, 6, 6, 6, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 73, 0, 0, 2, 1,
+     1, 1, 1],
+    [1, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1,
+     1, 1],
+    [1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1,
+     1, 1],
+    [1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+     1, 1]
 ]
 
+
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
 
 
 player = Player(100, screen_height - 130)
@@ -420,9 +445,10 @@ ladder_group = pygame.sprite.Group()
 door_group = pygame.sprite.Group()
 world = World(world_data)
 
-restart_button = Button(screen_width // 2 - 100, screen_height // 2 - 50, restart_img)
-start_button = Button(screen_width // 2 - 100, screen_height // 2 - 50, start_img)
-exit_button = Button(screen_width // 2 - 100, screen_height // 2 + 50, exit_img)
+restart = Button(screen_width // 2 - 145, screen_height // 2 - 50, restart_img)
+
+start = Button(screen_width // 2 - 145, screen_height // 2 - 50, start_img)
+exit = Button(screen_width // 2 - 145, screen_height // 2 + 50, exit_img)
 
 run = True
 while run:
@@ -434,10 +460,13 @@ while run:
     world.draw()
 
     if main_menu:
-        if exit_button.draw():
+        screen.blit(menu_img, (0, 0))
+        if exit.draw():
             run = False
-        if start_button.draw():
+
+        if start.draw():
             main_menu = False
+
     else:
         world.draw()
 
@@ -453,10 +482,13 @@ while run:
 
         # if player has died
         if game_over == -1:
-            if restart_button.draw():
+            screen.blit(menu_img, (0, 0))
+            if restart.draw():
+
                 player.reset(100, screen_height - 130)
                 game_over = 0
-            if exit_button.draw():
+            if exit.draw():
+
                 run = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
