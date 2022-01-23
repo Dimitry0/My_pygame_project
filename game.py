@@ -15,7 +15,7 @@ pygame.display.set_caption('nazvanie ne pridumal')
 
 # размер одного блока(клетки)
 tile_size = 25
-
+font = pygame.font.SysFont('img/Leto Text Sans Defect.otf', 70)
 gameover = 0
 main_menu = True
 menu_img = pygame.image.load('img/bg_castle.png')
@@ -140,8 +140,14 @@ class Player:
                 key = pygame.key.get_pressed()
                 if key[pygame.K_UP]:
                     dy = -5
+                    for i in self.climb_images:
+                        self.image = i
                 if key[pygame.K_DOWN]:
                     dy = 5
+                    for i in self.climb_images:
+                        self.image = i
+            if pygame.sprite.spritecollide(self, door_group, False):
+                gameover = 1
 
             self.rect.x += dx
             self.rect.y += dy
@@ -159,6 +165,7 @@ class Player:
     def reset(self, x, y):
         self.images_right = []
         self.images_left = []
+        self.climb_images = []
         self.index = 0
         self.counter = 0
         for num in range(1, 5):
@@ -169,7 +176,14 @@ class Player:
             self.images_right.append(img_right)
             self.images_left.append(img_left)
         self.dead_image = pygame.image.load('img/ghost_dead.png')
+
         self.dead_image = pygame.transform.scale(self.dead_image, (20, 30))
+        self.climb_image1 = pygame.image.load('img/alienGreen_climb1.png')
+        self.climb_image1 = pygame.transform.scale(self.climb_image1, (17.5, 27.5))
+        self.climb_image2 = pygame.image.load('img/alienGreen_climb2.png')
+        self.climb_image2 = pygame.transform.scale(self.climb_image2, (17.5, 27.5))
+        self.climb_images.append(self.climb_image1)
+        self.climb_images.append(self.climb_image2)
         self.image = self.images_right[self.index]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -413,7 +427,7 @@ world_data = [
      0, 0, 1],
     [1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 76, 0, 0, 0, 0, 0,
      0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 73, 0, 0, 0, 0, 0, 0, 0, 70, 2,
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 71, 0, 0, 74, 76, 0, 0, 73, 0, 0, 0, 0, 0, 0, 70, 2,
      71, 9, 0, 1],
     [1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9,
      0, 1],
@@ -457,7 +471,7 @@ while run:
 
     screen.blit(bg_img, (0, 0))
 
-    world.draw()
+    #world.draw()
 
     if main_menu:
         screen.blit(menu_img, (0, 0))
@@ -468,10 +482,11 @@ while run:
             main_menu = False
 
     else:
-        world.draw()
+
 
         if gameover == 0:
             snail_group.update()
+
 
         snail_group.draw(screen)
         lava_group.draw(screen)
@@ -479,7 +494,8 @@ while run:
         door_group.draw(screen)
 
         game_over = player.update(gameover)
-
+        if game_over == 0:
+            world.draw()
         # if player has died
         if game_over == -1:
             screen.blit(menu_img, (0, 0))
@@ -490,9 +506,15 @@ while run:
             if exit.draw():
 
                 run = False
+        if game_over == 1:
+            screen.blit(menu_img, (0, 0))
+            draw_text('YOU WIN!', font, (255, 255, 255), (screen_width // 2) - 140, screen_height // 2)
+            if exit.draw():
+                run = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
 
     pygame.display.update()
 
