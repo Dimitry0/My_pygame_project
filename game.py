@@ -74,16 +74,16 @@ class Player:
             key = pygame.key.get_pressed()
             if key[pygame.K_SPACE] and self.jumped == False and self.vel_y == 0:
                 # задаем высоту прыжка
-                self.vel_y = -11
+                self.vel_y = -12.5
                 self.jumped = True
             if not key[pygame.K_SPACE] and self.vel_y == 0:
                 self.jumped = False
             if key[pygame.K_LEFT]:
-                dx -= 3
+                dx -= 4
                 self.counter += 1
                 self.direction = -1
             if key[pygame.K_RIGHT]:
-                dx += 3
+                dx += 4
                 self.counter += 1
                 self.direction = 1
             if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
@@ -411,9 +411,9 @@ world_data = [
      0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0,
      0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 7, 0,
+    [1, 0, 0, 0, 0, 0, 0, 74, 75, 76, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 7, 0,
      0, 1],
-    [1, 0, 9, 70, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 71, 0, 0, 74, 76, 0, 0, 0, 0, 75, 0, 70, 2, 2,
+    [1, 0, 9, 70, 2, 2, 6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 71, 0, 0, 74, 76, 0, 0, 0, 0, 73, 0, 70, 2, 2,
      2, 2, 2, 1],
     [1, 0, 9, 0, 77, 1, 1, 1, 1, 1, 1, 1, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 1, 1,
      1, 1, 1],
@@ -498,14 +498,9 @@ while run:
             world.draw()
         # if player has died
         if game_over == -1:
-            screen.blit(menu_img, (0, 0))
-            if restart.draw():
+            player = Player(100, screen_height - 130)
+            game_over = 0
 
-                player.reset(100, screen_height - 130)
-                game_over = 0
-            if exit.draw():
-
-                run = False
         if game_over == 1:
             screen.blit(menu_img, (0, 0))
             draw_text('YOU WIN!', font, (255, 255, 255), (screen_width // 2) - 140, screen_height // 2)
